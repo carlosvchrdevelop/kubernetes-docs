@@ -37,7 +37,6 @@ Comandos generales.
 | `kubectl get po`                                                              | Obtiene una lista con los Pods creados                                                                       |
 | `kubectl get po {nombrePod}`                                                  | Obtiene información básica de un Pod en particular.                                                          |
 | `kubectl get po -o wide`                                                      | Obtiene una lista más detallada con los Pods creados                                                         |
-| `kubectl get pod {nombrePod} -o wide`                                         | Muestra información básica de un Pod, pero con algunos campos adicionales                                    |
 | `kubectl get po {nombrePod} --show-labels`                                    | Como el anterior, pero muestra las labels del Pod                                                            |
 | `kubectl get po --show-labels -l {etiqueta}={valor}`                          | Obtiene información básica de los pods que tengan una etiqueta {etiqueta} con valor {valor}                  |
 | `kubectl get po --show-labels -l {etiqueta}!={valor}`                         | Como el anterior, pero realiza la búsqueda inversa                                                           |
