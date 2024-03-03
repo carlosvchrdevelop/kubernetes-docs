@@ -143,13 +143,13 @@ kubectl get pods -o wide
 Para **exportar la configuración** de un pod. Con `-o yaml` exportamos la configuración en formato `yaml`, y con `-o json`, en formato `json`. Esto nos permite editar detalladamente la configuración de nuestros Pods.
 
 ```bash
-kubectl get pod/nombrePod -o yaml > configNombrePod.yaml
+kubectl get pod nombrePod -o yaml > configNombrePod.yaml
 ```
 
 Para **obtener información detallada de un pod** en particular (por ejemplo el de nginx1 creado anteriormente) podemos ejecutar el comando `describe`.
 
 ```bash
-kubectl describe pod/nginx1
+kubectl describe pod nginx1
 ```
 
 Para **ejecutar un comando dentro de un pod** ejecutamos el siguiente comando, similar a cómo se hace en Docker.
@@ -186,6 +186,48 @@ kubectl logs -f apache
 kubectl logs apache --tail=20
 ```
 
+# Deployments
+
+Un `Deployment` es un workload más avanzado que un Pod. Podemos decir que un Deployment es una burbuja que engloba a un Pod y le aporta superpoderes, como la posibilidad de hacer updates y rollbacks, la recuperación ante caídas y el escalado. Dentro de un deployment se crea silenciosamente un `Replica Set` que va a ser el encargado de escalar nuestro Pod hasta alcanzar el número de réplicas deseado.
+
+Crear un deployment. Esto crea un Deployment junto con un Replica Set y un Pod asociados.
+
+```bash
+kubectl create deployment nombreDeployment --image=imagenDocker
+```
+
+Para visualizar la creación del deployment podemos usar el siguiente comando.
+
+```bash
+kubectl get deployments
+```
+
+Obtener información detallada de un deployment.
+
+```bash
+kubectl describe deployment nombreDeployment
+```
+
+Muchas de los comandos que se emplean en los Pod se pueden usar también en los Deployment, por lo que no repetiré todos. Uno de los comandos que no se han visto, muy intereante y que también se pueden usar en los Pods, es la de editar la configuración al vuelo.
+
+El siguiente comando abre un editor de consola que nos permmite editar la configuración en yaml del recurso y aplicarla automáticamente.
+
+```bash
+kubectl edit deploy nombreDeployment
+```
+
+En lugar de modificar toda la configuración, podemos escalar el número de réplicas (de Pods) de un deployment directamente. En el siguiente ejemplo se escala a 5 réplicas el Pod del Deployment nginx-d.
+
+```bash
+kubectl scale deploy nginx-d --replicas=5
+```
+
+En su lugar, también podemos escalar todos los Deployments que tengan alguna etiqueta.
+
+```bash
+kubectl scale deploy -l entorno=prod --replicas=5
+```
+
 # Servicios
 
 Desplegar un servicio, donde `--port` hace referencia al puerto interno y `--type=LoadBalancer`lo hace visible desde el exterior.
@@ -212,10 +254,27 @@ Para borrar un servicio.
 kubectl delete svc nombreSvc
 ```
 
-# Lanzar Pods desde un yaml
+# Aliases
+
+| comando    | extended    | abbr short |
+| :--------- | :---------- | :--------- |
+| pod        | pods        | po         |
+| deployment | deployments | deploy     |
+| replicaset | replicasets | rs         |
+| service    | services    | svc        |
+
+# Lanzar configuraciones de recursos desde un yaml
+
+Para crear un nuevo recurso podemos ejecutar `create`.
 
 ```bash
 kubectl create -f archivo.yaml
+```
+
+Sin embargo, si el recurso ya existe puede dat un error. Con el comando `apply` podemos crear o actualizar un recurso si ya existe.
+
+```bash
+kubectl apply -f archivo.yaml
 ```
 
 # Proxy

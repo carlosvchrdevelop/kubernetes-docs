@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+    name: failure
+    labels:
+        name: failure
+spec:
+    containers:
+        - name: failure
+          image: busybox
+          resources:
+              limits:
+                  memory: '64Mi'
+                  cpu: '500m'
+          command: ['sh', '-c', 'echo "Saliendo" && exit 1']
+    restartPolicy: OnFailure
