@@ -220,7 +220,7 @@ kubectl delete all --all
 
 ## Comandos generales
 
-Los comandos en los que se indica el campo `{resource}` significa que son válidos para todos, o la mayoría, de los recursos identificados en la tabla inicial donde se identifican los diferentes tipos: `po`, `deploy`, `svc`, `ns`, `rs`, `enpoints`.
+Los comandos en los que se indica el campo `{resource}` significa que son válidos para todos, o la mayoría, de los recursos identificados en la tabla de `Aliases` anterior. Podemos usar tanto el nombre del reecurso como la abreviatura, como sea más cómodo.
 
 ```bash
 # Crear un recurso de forma declarativa
