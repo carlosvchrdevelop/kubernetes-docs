@@ -1,13 +1,13 @@
 # Guía práctica de Kubernetes
 
-Bienvenidx a la guía práctica de Kubernetes. Esta guía se encuentra estructurade de la siguiente manera:
+Te doy la bienvenida a la guía práctica de Kubernetes. Esta guía se encuentra estructurade de la siguiente manera:
 
--   [README](/) (este documento): Conceptos básicos, listado de comandos (modo imperativo), y ejemplos de inicio rápido.
--   [PODS](./PODS.md): Explicación de configuración de archivos yaml de los Pods.
--   [DEPLOYMENTS](./DEPLOYMENTS.md): Explicación de configuración de archivos yaml de los Deployments.
--   [SERVICES](./SERVICES.md): Explicación de configuración de archivos yaml de los Services.
--   [NAMESPACES](./NAMESPACES.md): Explicación de configuración de archivos yaml de los Namespaces.
--   [SECURIZATION](./NAMESPACES.md): Recomendaciones para mantener un clúster serguro.
+-   [README](/) (este documento): Conceptos teóricos, configuraciones, comandos y ejemplos básicos.
+-   [Pod](./Pod.yaml): Configuración declarativa de un Pod.
+-   [Deployment](./Deployment.yaml): Configuración declarativa de un Deployment.
+-   [Service](./Service.yaml): Configuración declarativa de un Service.
+-   [Namespace](./Namespace.yaml): Configuración declarativa de un Namespace.
+-   [LimitRange](./LimitRange.yaml): Configuración declarativa de un LimitRange.
 
 Mi recomendación es empezar por leer los conceptos básicos de esta página y realizar los ejemplos de las secciones `Quick start`, probar algunos ejemplos por vuestra cuenta teniendo como referencia la lista de comandos y, a continuación, pasar a las secciones específicas de Deployments y Servicios.
 
@@ -70,9 +70,13 @@ Proporciona identidades a los pods y controla los permisos de acceso a los recur
 Define las reglas de enrutamiento externo al clúster para el tráfico entrante.
 Permite exponer servicios HTTP y HTTPS de manera más avanzada que los servicios normales.
 
-## DaemonSets
+## DaemonSet
 
 Garantiza que todos los nodos del clúster ejecuten una instancia específica de un pod. Útil para tareas que deben ejecutarse en cada nodo, como la recolección de registros.
+
+## LimitRange
+
+Es un objeto que se utiliza para establecer límites en los recursos de los contenedores en un clúster. Los límites se pueden aplicar a varios recursos, como CPU, memoria y el número de contenedores.
 
 # Minikube
 
@@ -223,6 +227,9 @@ kubectl delete all --all
 Los comandos en los que se indica el campo `{resource}` significa que son válidos para todos, o la mayoría, de los recursos identificados en la tabla de `Aliases` anterior. Podemos usar tanto el nombre del reecurso como la abreviatura, como sea más cómodo.
 
 ```bash
+# Obtener información de clúster
+kubectl config view
+
 # Crear un recurso de forma declarativa
 kubectl create -f {name}.yaml
 
@@ -235,6 +242,9 @@ kubectl proxy
 
 # Ejecutar comandos en otro namespace distnto de default
 kubectl [...] -n {namespace}
+
+# Cambiar el namespace por defecto
+kubectl config set-context --current --namespace={namespace}
 
 # Obtener la lista de recursos creados de un tipo
 # params:
@@ -292,6 +302,19 @@ kubectl delete {resource}/{name} -l {tagName}={tagValue}
 kubectl delete {resource}/{name} -l {tagName}!={tagValue}
 kubectl delete {resource}/{name} -l {tagName} in ({tagValue},{tagValue},...)
 kubectl delete {resource}/{name} -l {tagName} notin ({tagValue},{tagValue},...)
+
+# Obtener historial del despliegue de un recurso
+# params:
+#   --revision: historial de una versión específica
+kubectl rollout history {resource} {name}
+kubectl rollout history {resource} {name} --revision={num}
+
+# Obtener información de lo que se está realizando sobre un recurso
+kubectl rollout status {resource} {name}
+
+# Deshacer una actualización
+kubectl rollout undo {resource} {name}
+kubectl rollout undo {resource} {name} --to-revision={num}
 ```
 
 ## Comandos específicos de los Pods
@@ -324,7 +347,7 @@ kubectl port-forward {name} {externalPort}:{internalPort}
 
 ```bash
 # Crear un deployment
-kubectl create deployment {name} --image={dockerImage}
+kubectl create deploy {name} --image={dockerImage}
 
 # Escala el número de réplicas de los Pods del Deployment
 kubectl scale deploy {name} --replicas={num}
@@ -341,6 +364,24 @@ kubectl scale deploy {name} --replicas={num}
 kubectl expose pod {podName} --name={name}
 kubectl expose pod {podName} --name={name} --type={svcType}
 kubectl expose pod {podName} --name={name} --port={port}
+```
+
+## Comandos específicos de los Namespaces
+
+```bash
+# Crear un nuevo namespace
+kubectl create ns {name}
+
+# Obtener todos los eventos ocurridos en el namespace.
+# Esta es la información que aparece al final al realizar
+# un kubectl describe pod, pero de todos los pods.
+# parms:
+#   -n: especifica el namespace sobre el que operar
+#   --field-selector: permite filtrar por los valores de una columna
+kubectl get events
+kubectl get events -n {namespace}
+kubectl get events --field-selector {col}={value}
+kubectl get events --field-selector type="Error"
 ```
 
 # Dockerizar aplicaciones

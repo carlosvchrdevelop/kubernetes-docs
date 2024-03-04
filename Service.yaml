@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: miServicio
+spec:
+    # El tipo de servicio (consultar README.md) [ClusterIP, NodePort, LoadBalancer]
+    type: NodePort
+    # El selector permite buscar los deployments (o pods) que de deben
+    # exponer en este servicio. Es importante que exista alguno deployment
+    # o pod con las etiquetas que aquí definamos.
+    selector:
+        app: myapp
+        entorno: dev
+    ports:
+        # El targetPort es opcional, si no se especifica kubernetes le asigna por defecto el mismo
+        # valor que el establecido en port. El nodePort es el valor de puerto que usamos para poder
+        # conectarnos desde el exterior (junto con la IP del clúster). Si no lo especificamos lo
+        # asigna kubernetes por defecto. Se debe establecer con un valor entre 30000 a 32767.
+        - port: 80 # Puerto externo (desde el que se conectan los clientes)
+          targetPort: 80 # Puerto interno al que se redirigen las solicitudes
+          nodePort: 31000 # Puerto del nodo (para acceder externamente al servicio) [30000 a 32767]
+          appProtocol: http # Protocolo de capa 7 autorizado (válido solo en algunas configuraciones)
+          protocol: TCP # Procolo de capa 4 autorizado [TCP, UDP son los más comunes]
+

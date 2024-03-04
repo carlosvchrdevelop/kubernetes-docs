@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+    name: miPod
+    labels:
+        name: miPodTag
+        otroTag: otroValor
+# Política de reinicio (Always, OnFailure, Never)
+# - Always: si se cae, se para manualmente, o falla el pod, se reinicia
+# - OnFailure: solo se reinicia el pod si se ha caido por un fallo
+# - Never: nunca se reinicia el pod automáticamente
+restartPolicy: Always
+spec:
+    containers:
+        - name: miPod
+          image: nginx
+          resources:
+              limits:
+                  memory: '128Mi'
+                  cpu: '500m'
+          ports:
+              - containerPort: 80

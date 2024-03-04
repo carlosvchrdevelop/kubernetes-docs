@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: miDeploy
+spec:
+    selector:
+        # Etiquetas que usa el deployment para buscar los Pods que debe desplegar.
+        # Si se especifica una sección template, deben coincidir las etiquetas, pues
+        # en caso contrario no podría desplegar los pods definidos en su propia plantilla.
+        matchLabels:
+            app: miDeployTag
+    replicas: 3 # Número de instancias que crea de cada Pod dentro del deployment
+    # Estrategia para recrear los Pods al realizar cambios (RollingUpdate y Recreate)
+    # - RollingUpdate: va actualizando los pods uno a uno garantizando que siempre haya uno activo.
+    # - Recreate: recrea todas las réplicas de los pods a la vez con la nueva configuración (pérdida de disponibilidad)
+    strategy:
+        type: RollingUpdate
+        # La propiedad RollingUpdate solo se puede establecer si lo seleccionamos como tipo de estrategia.
+        # Esta propiedad es opcional. Básicamente, si hemos desplegado 10 réplicas de un pod, le estamos indicando
+        # con maxUnavailable=1 y maxSurge=3 indicamos que el deployment nunca debe tener menos de 9 (10-1) réplicas
+        # disponibles y no pasarse 13 (10+3) creando réplicas adicionales.
+        rollingUpdate:
+            maxUnavailable: 1
+            maxSurge: 3
+    # En estrategias RollingUpdate, cuánto espera en recrear entre una réplica y otra (es opcional y lo podemos omitir).
+    # Esto permite aplicar los cambios más progresivamente y no sobrecargar mucho el sistema.
+    minReadySeconds: 2
+    # Define la plantilla con la que se van a crear los pods
+    template:
+        metadata:
+            labels:
+                app: miDeployTag
+        # Política de reinicio de los pods (Always, OnFailure, Never)
+        # - Always: si se cae, se para manualmente, o falla el pod, se reinicia
+        # - OnFailure: solo se reinicia el pod si se ha caido por un fallo
+        # - Never: nunca se reinicia el pod automáticamente
+        restartPolicy: Always
+        spec:
+            containers:
+                - name: miDeploy
+                  image: nginx
+                  # Define cuándo se debe hacer un pull de la imagen del repositorio.
+                  # Always: siempre (útil si queremos apuntar a la versión latest)
+                  # IfNotPresent: solo si no se encuentra ya descargada
+                  # Never: no descarga automáticamente la imagen, debemos hacerlo manualmente
+                  imagePullPolicy: Always
+                  resources:
+                      # Los límites se pueden especificar aquí o un archivo LimitRange que
+                      # luego se aplique al namespace
+                      limits:
+                          memory: '128Mi'
+                          cpu: '500m' # Este valor indica 500 mili-cpus, es decir 0.5 núcleos
+                  # Puertos del deployment. Si no se especifican se usan todos los que exponen los
+                  # contenedores. Es recomendado ponerlo siempre, para facilitar el entendimiento.
+                  ports:
+                      - containerPort: 80

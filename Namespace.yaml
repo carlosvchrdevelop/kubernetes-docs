@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+    name: miNamespace
+    labels:
+        unLabel: unValor
+        entorno: prod
+        alcance: publico

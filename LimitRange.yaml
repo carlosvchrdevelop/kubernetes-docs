@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: LimitRange
+metadata:
+    name: limits
+spec:
+    limits:
+        - default: # Límites por defecto asignados a los recursos (pods)
+              memory: '512Mi'
+              cpu: '1'
+          defautl-request: # Límites para solicitudes (request) de recursos
+              memory: '256Mi'
+              cpu: '500m'
+          max: # Límite máximo de recursos consumidos por el clúster (namespace)
+              memory: '1Gi'
+              cpu: '4'
+          min: # Recursos mínimos garantizados exclusivos para el clúster (namespace)
+              memory: '128Mi'
+              cpu: '500m'
+          type: Container
