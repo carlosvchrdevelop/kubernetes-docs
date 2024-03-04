@@ -170,7 +170,7 @@ minikube config set cpu 4 -p miCluster
 
 ```
 
-# Kubernetes
+# Kubectl
 
 Kubernetes, como tal, es la tecnología que nos permite crear la infraestructura, pero para montar esta infraestructura dependemos de las herramientas que provee su ecosistema. La herramienta más importante es `kubectl`. Kubectl es la interfaz de línea de comandos de Kubernetes, que permite a los usuarios interactuar y gestionar clústeres de Kubernetes (Minikube, Kubeadm, etc.) mediante comandos. Se utiliza para desplegar, gestionar y monitorizar aplicaciones y recursos en entornos basados en Kubernetes.
 
