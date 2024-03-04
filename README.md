@@ -2,20 +2,20 @@
 
 Bienvenidx a la guía práctica de Kubernetes. Esta guía se encuentra estructurade de la siguiente manera:
 
--   README.md (este documento): Conceptos básicos, listado de comandos (modo imperativo), y ejemplos de inicio rápido.
+-   [README](/) (este documento): Conceptos básicos, listado de comandos (modo imperativo), y ejemplos de inicio rápido.
 -   [PODS](./PODS.md): Explicación de configuración de archivos yaml de los Pods.
 -   [DEPLOYMENTS](./DEPLOYMENTS.md): Explicación de configuración de archivos yaml de los Deployments.
 -   [SERVICES](./SERVICES.md): Explicación de configuración de archivos yaml de los Services.
 -   [NAMESPACES](./NAMESPACES.md): Explicación de configuración de archivos yaml de los Namespaces.
 -   [SECURIZATION](./NAMESPACES.md): Recomendaciones para mantener un clúster serguro.
 
-Mi recomendación es empezar por leer los conceptos básicos de esta página y realizar los ejemplos de las secciones `Quick start`, probar algunos ejemplos por vuestra cuenta teniendo como referencia la lista de comandos y, a continuación, pasar a las secciones específicas de Deployments y Servicios para
+Mi recomendación es empezar por leer los conceptos básicos de esta página y realizar los ejemplos de las secciones `Quick start`, probar algunos ejemplos por vuestra cuenta teniendo como referencia la lista de comandos y, a continuación, pasar a las secciones específicas de Deployments y Servicios.
 
-## Kubernetes
+# Kubernetes
 
 Kubernetes es una plataforma de código abierto diseñada para la automatización, implementación, escala y gestión de aplicaciones contenerizadas. Kubernetes proporciona un entorno robusto para desplegar y orquestar contenedores, facilitando la gestión eficiente de aplicaciones en entornos de nube y en clústeres de servidores. Con características como el escalado automático, la auto curación y la declaratividad en la definición de recursos, Kubernetes se ha convertido en la herramienta líder para la administración de contenedores en entornos de producción, permitiendo a los desarrolladores y administradores de sistemas gestionar aplicaciones de manera eficiente y escalable.
 
-### Recursos
+## Recursos
 
 En Kubernetes, los recursos son unidades de cómputo que representan los componentes y objetos gestionados por el sistema.
 
@@ -23,19 +23,19 @@ Hay dos formas de crear recursos: la forma imperativa, que consiste en ejecutar 
 
 Estos son los tipos de recurso más habituales:
 
-#### Pods
+## Pods
 
 Representa la unidad mínima en Kubernetes y puede contener uno (recomendado) o varios contenedores. Proveen al contenedor de un `endpoint` (dirección IP y puerto).
 
-#### ReplicaSet
+## ReplicaSet
 
 Garantiza que un número especificado de réplicas de un pod se estén ejecutando en todo momento, de modo que si una réplica se cae, crea otra automáticamente. Proporciona escalado automático y gestión de la disponibilidad. Sin embargo, normalmente no trabajamos directamente con este recurso, sino que lo gestiona el Deployment de forma transparente y nosotros trabajamos con el Deployemnt.
 
-#### Deployments
+## Deployments
 
 Permiten gestionar la implementación de aplicaciones. Suponen una capa que engloba a uno o varios pods e integra de forma transparente un ReplicaSet que nos permite escalar fácilmente los pods que contiene.
 
-#### Services
+## Services
 
 Permite crear políticas de acceso a los pods de un deployment. Ofrece una forma estable de acceder a aplicaciones a través de una dirección IP y un nombre de servicio. Los tipos de servicios que podemos encontrar son los siguientes:
 
@@ -43,38 +43,38 @@ Permite crear políticas de acceso a los pods de un deployment. Ofrece una forma
 2. **NodePort**: Permite al servicio ser accesible desde fuera del clúster. Estos servicios son los que deben desplegarse cuando queramos que los usuarios puedan acceder al servicio.
 3. **LoadBalancer**: Igual que el NodePort, pero pensado para integrarse con un servidor Cloud. Este servicio agrega un puerto externo que es el que provee la nube externa para conectarse al servicio. Si no estamos en un entorno cloud se debe usar el NodePort, ya que el LoadBalancer malgastará recursos tratando de adquirir esa IP externa, aunque también debería funcionar.
 
-#### ConfigMaps
+## ConfigMaps
 
 Almacena la configuración no confidencial en forma de pares clave-valor, que luego se montan como volúmenes o se utilizan como variables de entorno en los pods.
 
-#### Secrets
+## Secrets
 
 Similar a ConfigMaps, pero diseñado para almacenar información confidencial, como contraseñas y tokens de acceso.
 
-#### Persistent Volumes (PV) y Persistent Volume Claims (PVC):
+## Persistent Volumes (PV) y Persistent Volume Claims (PVC):
 
 Permiten el almacenamiento persistente para los pods, independientemente de su ciclo de vida.
 PV representa el almacenamiento físico, mientras que PVC solicita y utiliza ese almacenamiento.
 
-#### Namespaces
+## Namespaces
 
 Proporciona múltiples clústeres virtuales dentro de un clúster de Kubernetes.
 Se utiliza para aislar y organizar recursos entre diferentes equipos o aplicaciones.
 
-#### ServiceAccounts
+## ServiceAccounts
 
 Proporciona identidades a los pods y controla los permisos de acceso a los recursos del clúster.
 
-#### Ingress
+## Ingress
 
 Define las reglas de enrutamiento externo al clúster para el tráfico entrante.
 Permite exponer servicios HTTP y HTTPS de manera más avanzada que los servicios normales.
 
-#### DaemonSets
+## DaemonSets
 
 Garantiza que todos los nodos del clúster ejecuten una instancia específica de un pod. Útil para tareas que deben ejecutarse en cada nodo, como la recolección de registros.
 
-## Minikube
+# Minikube
 
 Minikube es una utilidad de línea de comandos que permite crear un clúster de kubernetes de un único nodo (se puede ampliar a varios nodos) con el fin de realizar pruebas **en entornos de desarrollo** de manera sencilla, sin la complejidad que conlleva desplegar un clúster real con herramientas coomo `kubeadm`.
 
@@ -82,7 +82,7 @@ Minikikube permite la posibilidad de desplegar tantos klústeres como sea necesa
 
 El contexto en kubernetes hace referencia al clúster con el que estamos trabajando y sobre el que toman efecto los comandos ejecutados con `kubectl`. Kubectl es una utilidad de línea de comandos que nos permitirá controlar nuestro clúster, ya sea Minikube, Kubeadm o cualquier otro.
 
-### Quick start
+## Quick start
 
 La documentación oficial se encuentra [aquí](https://minikube.sigs.k8s.io/docs/start/), donde también se pueden encontrar las guías de instalación en otras plataformas. En este ejemplo se realizará en un sistema MacOS ARM64.
 
@@ -100,7 +100,7 @@ minikube stop -p minikube
 minikube delete -p minikube
 ```
 
-### Comandos
+## Comandos
 
 Los comandos más útiles que podemos utilizar para gestionar el clúster de minikube son los siguientes.
 
@@ -170,18 +170,7 @@ minikube config set cpu 4 -p miCluster
 
 ```
 
-## Alias
-
-| Recurso    | Abbr   | Descripción                                                                                                                                                                                                                  |
-| :--------- | :----- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| pod        | po     | Unidad mínima de kubernetes sobre los que se pueden desplegar uno (recomendado) o varios contendores y los dota de características especiales, como un endpoint (ip:puerto), y característcas de monitoreo.´                 |
-| deployment | deploy | Es el recurso con el que se suele trabajar. El Deployment despliega uno o varios Pods y otorga características como la posibilidad de escalar y monitorear de forma más eficiente los Pods.                                  |
-| replicaset | rs     | Son los encargados de mantener el número de réplicas deseados de cada Pod. Se integra de forma transparente en los Deployment para posibilitarles el escalado de recursos.                                                   |
-| service    | svc    | Los servicios permiten que los Pods de los Deployments sean accesibles por otros Pods o desde el exterior. Hay tres tipos: ClusterIP, NodePort y LoadBalancer. Puedes conocer más en el apartado aclaratorio a continuación. |
-| namespace  | ns     | Los namespaces permiten crear clúster virtuales que mejoran la seguruidad y eficiencia, permitiendo dividir en varias zonas nuestros despliegues.                                                                            |
-| endpoints  | -      | Los endpoints son una tupla IP:Puerto que son asignados a cada uno de los Pods, y que se tratan como una entidad independiente                                                                                               |
-
-### Instalación
+# Kubernetes
 
 Kubernetes, como tal, es la tecnología que nos permite crear la infraestructura, pero para montar esta infraestructura dependemos de las herramientas que provee su ecosistema. La herramienta más importante es `kubectl`. Kubectl es la interfaz de línea de comandos de Kubernetes, que permite a los usuarios interactuar y gestionar clústeres de Kubernetes (Minikube, Kubeadm, etc.) mediante comandos. Se utiliza para desplegar, gestionar y monitorizar aplicaciones y recursos en entornos basados en Kubernetes.
 
@@ -198,7 +187,7 @@ brew install kubectl
 kubectl version --client
 ```
 
-### Quick start
+## Quick start
 
 ```bash
 # Creamos un Deployment basado en un contenedor nginx
@@ -218,7 +207,18 @@ minikube get service nginx-svc --url
 kubectl delete all --all
 ```
 
-### Comandos generales
+## Aliases
+
+| Recurso    | Abreviatura |
+| :--------- | :---------- |
+| pod        | po          |
+| deployment | deploy      |
+| replicaset | rs          |
+| service    | svc         |
+| namespace  | ns          |
+| endpoints  | -           |
+
+## Comandos generales
 
 Los comandos en los que se indica el campo `{resource}` significa que son válidos para todos, o la mayoría, de los recursos identificados en la tabla inicial donde se identifican los diferentes tipos: `po`, `deploy`, `svc`, `ns`, `rs`, `enpoints`.
 
@@ -294,7 +294,7 @@ kubectl delete {resource}/{name} -l {tagName} in ({tagValue},{tagValue},...)
 kubectl delete {resource}/{name} -l {tagName} notin ({tagValue},{tagValue},...)
 ```
 
-### Comandos específicos de los Pods
+## Comandos específicos de los Pods
 
 ```bash
 # Crear un Pod
@@ -320,7 +320,7 @@ kubectl logs {name} -c {containerName}
 kubectl port-forward {name} {externalPort}:{internalPort}
 ```
 
-### Comandos específicos de los Deployments
+## Comandos específicos de los Deployments
 
 ```bash
 # Crear un deployment
@@ -330,7 +330,7 @@ kubectl create deployment {name} --image={dockerImage}
 kubectl scale deploy {name} --replicas={num}
 ```
 
-### Comandos específicos de los Services
+## Comandos específicos de los Services
 
 ```bash
 # Desplegar un servicio
@@ -343,9 +343,7 @@ kubectl expose pod {podName} --name={name} --type={svcType}
 kubectl expose pod {podName} --name={name} --port={port}
 ```
 
-# Docker
-
-## Dockerizar
+# Dockerizar aplicaciones
 
 El primer paso será crear nuestro Dockerfile donde se establecerá la imagen base, copiarán los ficheros necesarios, ejecutarán los comandos pertinentes y definirá el EntryPoint del contenedor.
 
@@ -363,7 +361,7 @@ docker login
 docker push user/name:tag
 ```
 
-### Versión multiarquitectura (opcional)
+## Versión multiarquitectura (opcional)
 
 Para subir una imagen multiarquitectura disponemos de la utilidad buildx.
 
