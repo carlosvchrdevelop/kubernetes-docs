@@ -8,6 +8,8 @@ Te doy la bienvenida a la guía práctica de Kubernetes. Esta guía se encuentra
 -   [Service](./Service.yaml): Configuración declarativa de un Service.
 -   [Namespace](./Namespace.yaml): Configuración declarativa de un Namespace.
 -   [LimitRange](./LimitRange.yaml): Configuración declarativa de un LimitRange.
+-   [ConfigMap](./ConfigMap.yaml): Configuración de fichero de variables.
+-   [Secret](./Secret.yaml): Configuración fichero de secretos (contraseñas, tokens, etc.)
 
 Mi recomendación es empezar por leer los conceptos básicos de esta página y realizar los ejemplos de las secciones `Quick start`, probar algunos ejemplos por vuestra cuenta teniendo como referencia la lista de comandos y, a continuación, pasar a las secciones específicas de Deployments y Servicios.
 
@@ -220,6 +222,8 @@ kubectl delete all --all
 | replicaset | rs          |
 | service    | svc         |
 | namespace  | ns          |
+| configmap  | cm          |
+| secret     | -           |
 | endpoints  | -           |
 
 ## Comandos generales
@@ -382,6 +386,54 @@ kubectl get events
 kubectl get events -n {namespace}
 kubectl get events --field-selector {col}={value}
 kubectl get events --field-selector type="Error"
+```
+
+## Config Maps
+
+Cuando definimos un Pod o un Deployment, es posible que necesitemos definir multitud de variables en variables `env`. Una forma más eficiente de trabajar es con `Congif Maps`. Hay dos formas, la recomendada, que es crear un archivo yaml declarativo y la segunda, que es definirlo a través de comandos.
+
+Para la primera forma podemos ver el ejemplo de [ConfigMaps](./ConfigMap.yaml), para la segunda, podemos ver los comandos a continación.
+
+```bash
+# Crear un configmap de forma imperativa
+kubectl create cm {name} --from-literal={var}={val} --from-literal={var}={val}...
+
+# Consultar las variables configuradas
+kubectl describe cm {name}
+
+# Si hacemos una configuración declarativa con un yaml, lo aplicamos así
+kubectl apply -f {configmap}
+
+# Si necesitamos crear un configmap con datos de un fichero externo (archivos tipo .env)
+kubectl create cm {name} --from-env-file={file}
+```
+
+Para gestionar los recursos de un namespace podemos crear un recurso tipo [LimitRange](./LimitRange.yaml) y aplicar la configuración con un `kubectl apply -f limit_range.yml`.
+
+En el archivo yaml, podemos usar los configMaps para ingestar las variables definidas en un pod o un deployment. Pero llega más allá. Se pueden definir configMaps en volúmenes, haciendo estas variables dinámicas. Piensa que cuando se crea un pod o un deployment con unas variables, estas son estáticas. Esto quiere decir que no las podemos modificar sin recrear el pod o el deployment posteriormente.
+
+Con los configMaps configurados en volúmenes, lo que hacemos es decirle a kubernetes que genere la configuración en una ruta que decidamos dentro del contenedor. Esta configuración la podremos consumir desde nuestra aplicación del contenedor. En el momento que necesitemos modificar esta configuración, bastará con editar el configMap y aplicar el cambio, sin necesidad de recrear el pod o el deployment, algo realmente útil.
+
+## Secrets
+
+Los secrets son recursos muy parecidos a los configMaps, pero con la característca de que va a cifrar la información, haciéndolos muy convenientes para guardar contraseñas, tokens, claves SSH, etc.
+
+Existen varios tipos de Secrets:
+
+-   **Opaque (`generic`)**: son los más parecidos a los configMaps, nos permite poner datos dentro de ellos, pero en lugar de verse en texto plano se opacan (están en cierta manera protegidos).
+-   **Service Account Token**: almacena un token que identifica un Service Account. Nos permite ejecutar dentro de un pod un determinado proceso asumiendo una identidad.
+-   **Docker Config**: almacena las credenciales necesarias para poder acceder a un registro privado de Docker.
+-   **Basic Authentication**: credenciales que se utilizan para la autenticación básica y que contiene dos propiedades obligatorias: el `username` y el `password`.
+-   **SSH**: permite almacenar credenciales para autenticarnos a través de SSH. Se necesita la propiedad `ssh-privatekey` que es un par de clave valor.
+-   **TLS**: almacena el certificado y su clave asociada que se utiliza para TLS. Su caso más habitual es usarlo con un recurso de tipo Ingress (para acceder desde el exterior del clúster). En este caso necesitamos los valores `tls.key` y `tls.crt`.
+-   **Bootstrap**: se utiliza para tokens especiales para el proceso de bootstrap de un nodo.
+
+```bash
+# Crear un secret de tipo Opaque
+kubectl create secret generic {name} --from-literal={var}={val} --from-literal={var}={val} ...
+
+# Crear un secret de tipo Docker Config (para usar contenedores privados)
+kubectl create secret docker-registry {name} --docker-server={ej:docker.io} --docker-username={username} --docker-password={pass} --docker-email={email}
 ```
 
 # Dockerizar aplicaciones

@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: mysql-d
+    labels:
+        app: mysql
+        type: db
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: mysql
+            type: db
+    template:
+        metadata:
+            labels:
+                app: mysql
+                type: db
+        spec:
+            containers:
+                - name: mysql
+                  image: mysql
+                  envFrom:
+                      - configMapRef:
+                            name: data-mysql
+                      - secretRef:
+                            name: secret-mysql
+                  resources:
+                      limits:
+                          memory: '512Mi'
+                          cpu: '1'
+                  ports:
+                      - containerPort: 3306
+                        name: db-port

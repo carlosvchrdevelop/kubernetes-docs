@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: ubuntu
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: ubuntu
+    template:
+        metadata:
+            labels:
+                app: ubuntu
+        spec:
+            containers:
+                - name: ubuntu
+                  image: ubuntu
+                  command: ['/bin/bash', '-c']
+                  args: ['tail -f /dev/null']
+                  env:
+                      - name: VAR1
+                        value: 'MUAJAJA'
+                      - name: VAR2
+                        valueFrom:
+                            configMapKeyRef:
+                                name: ubuntu-cmap
+                                key: SALUDO
+                  envFrom:
+                      - secretRef:
+                            name: ubuntu-secret
+                  resources:
+                      limits:
+                          memory: '128Mi'
+                          cpu: '500m'
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: ubuntu-cmap
+data:
+    SALUDO: 'HOLAAAA!'
+---
+apiVersion: v1
+kind: Secret
+metadata:
+    name: ubuntu-secret
+type: Opaque
+data:
+    SECRETO: U0VDUkVUT09PIQ==

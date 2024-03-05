@@ -9,14 +9,68 @@ metadata:
 # - Always: si se cae, se para manualmente, o falla el pod, se reinicia
 # - OnFailure: solo se reinicia el pod si se ha caido por un fallo
 # - Never: nunca se reinicia el pod automáticamente
-restartPolicy: Always
 spec:
+    restartPolicy: Always
+    # Si configuramos un secret de tipo docker-registry, podemos configurarlas aquí para usar
+    # conetedores de repositorios privados
+    imagePullSecrets:
+        - name: midockersecret
     containers:
         - name: miPod
           image: nginx
+          # Define cuándo se debe hacer un pull de la imagen del repositorio.
+          # Always: siempre (útil si queremos apuntar a la versión latest)
+          # IfNotPresent: solo si no se encuentra ya descargada
+          # Never: no descarga automáticamente la imagen, debemos hacerlo manualmente
+          imagePullPolicy: Always
+          # Comandos a ejecutar una vez creado el pod
+          command: ['/bin/sh', '-c', 'sleep 1000000']
+          # Con las env podemos mandar variables de entorno a los contenedores de nuestros pods
+          env:
+              - name: MI_VARIABLE
+                value: 'Valor de mi variable'
+              - name: NGINX_HOST
+                value: 'foobar.com'
+              # En lugar de tener las variables hardcodeadas, las podemos tener en un archivo
+              # configMap donde estén estas variables y las podemos referenciar indicando en
+              # name el nombre del configMap y en key el nombre de la variable declarada
+              - name: VAR_DE_CONFIGMAP
+                valueFrom:
+                    configMapKeyRef:
+                        name: nombre_configmap
+                        key: nombre_variable_del_configmap
+              # Además de configKeys, también lo podemos extraer de los secrets
+              - name: VAR_SECRETA
+                valueFrom:
+                    secretKeyRef:
+                        name: nombre_secret
+                        key: nombre_variable_del_secret
+          # Igual que el anterior, pero carga las variables en lote (todas las del recurso)
+          envFrom:
+              - configMapRef:
+                    name: nombre_configmap
+              - secretRef:
+                    name: nombre_secret
           resources:
+              # Los límites se pueden especificar aquí o un archivo LimitRange que
+              # luego se aplique al namespace
               limits:
                   memory: '128Mi'
-                  cpu: '500m'
+                  cpu: '500m' # Este valor indica 500 mili-cpus, es decir 0.5 núcleos
+          # Puertos del deployment. Si no se especifican se usan todos los que exponen los
+          # contenedores. Es recomendado ponerlo siempre, para facilitar el entendimiento.
           ports:
               - containerPort: 80
+          # Hay veces en las que asignar variables de entorno de forma estática como hemos hecho con
+          # env o envFrom no es suficiente, ya que queremos tener la posibilidad de poder modificarlas
+          # sin necesidad de tener que detener el Deploy o el Pod y volver a crearlo. Para ello podemos
+          # usar configMaps en volúmenes.
+          # En el siguiente ejemplo se generará la configuración en la ruta /var/www/config/db-config del
+          # contenedor, pudiendo modificar la configuración tan solo editando el configMap, sin tocar el pod.
+          volumeMounts:
+              - name: config-vol # Nombre del volumen que declaramos más abajo en volumes
+                mountPath: /var/www/config # Ruta donde se vincula el volumen (dentro del contenedor)
+    volumes:
+        - name: config-vol # Nombre que le damos a nuestro volumen
+          configMap:
+              name: db-config # Le decimos que use las variables del configmap mivolumen-cfg

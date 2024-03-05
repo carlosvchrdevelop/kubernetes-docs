@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: myapp
+    # Opcional, indicamos el namespace donde se va a crear
+    namespace: default
+data:
+    # Aquí definimos la lista de variables
+    POSTGRES_USER: 'pepe'
+    POSTGRES_PASSWORD: 'pepeIsTheBest' # Ojo, esto no se debe guardar aquí, sino en un secret
+    POSTGRES_DATABASE: 'guaydatabase'
+    PORT: '5432'

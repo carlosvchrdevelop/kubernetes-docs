@@ -37,20 +37,13 @@ spec:
         restartPolicy: Always
         spec:
             containers:
+                # Toda la configuración que se puede aplicar aquí dentro se ha descrito en
+                # el archivo de Pod.yaml, ya que aplica igual y así no se repite
                 - name: miDeploy
                   image: nginx
-                  # Define cuándo se debe hacer un pull de la imagen del repositorio.
-                  # Always: siempre (útil si queremos apuntar a la versión latest)
-                  # IfNotPresent: solo si no se encuentra ya descargada
-                  # Never: no descarga automáticamente la imagen, debemos hacerlo manualmente
-                  imagePullPolicy: Always
                   resources:
-                      # Los límites se pueden especificar aquí o un archivo LimitRange que
-                      # luego se aplique al namespace
                       limits:
                           memory: '128Mi'
-                          cpu: '500m' # Este valor indica 500 mili-cpus, es decir 0.5 núcleos
-                  # Puertos del deployment. Si no se especifican se usan todos los que exponen los
-                  # contenedores. Es recomendado ponerlo siempre, para facilitar el entendimiento.
+                          cpu: '500m'
                   ports:
                       - containerPort: 80
